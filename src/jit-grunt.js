@@ -21,6 +21,18 @@ jit.findUp = (cwd, iterator) => {
   return parent !== cwd ? jit.findUp(parent, iterator) : null;
 };
 
+jit.findTaskInDir = function (tasksDir, taskName) {
+  let taskPath;
+  if (tasksDir) {
+    for (let i = EXTENSIONS.length; i--;) {
+      taskPath = path.join(tasksDir, taskName + EXTENSIONS[i]);
+      if (fs.existsSync(taskPath)) {
+        return taskPath;
+      }
+    }
+  }
+  return null;
+};
 
 jit.findPlugin = function (taskName) {
   let pluginName, taskPath;
@@ -45,14 +57,16 @@ jit.findPlugin = function (taskName) {
     }
   }
 
+  // Override Custom Tasks
+  taskPath = this.findTaskInDir(this.overrideTasksDir, taskName);
+  if (taskPath) {
+    return this.loadPlugin(taskName, taskPath, true);
+  }
+
   // Custom Tasks
-  if (this.customTasksDir) {
-    for (let i = EXTENSIONS.length; i--;) {
-      taskPath = path.join(this.customTasksDir, taskName + EXTENSIONS[i]);
-      if (fs.existsSync(taskPath)) {
-        return this.loadPlugin(taskName, taskPath, true);
-      }
-    }
+  taskPath = this.findTaskInDir(this.customTasksDir, taskName);
+  if (taskPath) {
+    return this.loadPlugin(taskName, taskPath, true);
   }
 
   // Auto Mappings

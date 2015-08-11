@@ -15,6 +15,10 @@ module.exports = function (grunt, mappings) {
       jit.customTasksDir = path.resolve(options.customTasksDir);
     }
 
+    if (options.overrideTasksDir) {
+      jit.overrideTasksDir = path.resolve(options.overrideTasksDir);
+    }
+
     if (options.pluginsRoot) {
       jit.pluginsRoot = options.pluginsRoot;
     }

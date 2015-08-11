@@ -14,6 +14,7 @@ describe('Plugin find', () => {
 
   beforeEach(() => {
     jit.customTasksDir = undefined;
+    jit.overrideTasksDir = undefined;
     jit.mappings = {
       bar: 'grunt-foo'
     };
@@ -101,6 +102,36 @@ describe('Plugin find', () => {
     assert.deepEqual(
       loadPlugin.getCall(0).args,
       ['foo', path.resolve('custom/foo.coffee'), true]);
+  });
+
+  it('Override task', () => {
+    jit.customTasksDir = path.resolve('custom');
+    jit.overrideTasksDir = path.resolve('override');
+
+    existsSync.withArgs(path.resolve('custom/foo.js')).returns(true);
+    existsSync.withArgs(path.resolve('override/foo.js')).returns(true);
+
+    jit.findPlugin('foo');
+
+    assert.deepEqual(
+      loadPlugin.getCall(0).args,
+      ['foo', path.resolve('override/foo.js'), true]);
+  });
+
+  it('Override task: CoffeeScript', () => {
+    jit.customTasksDir = path.resolve('custom');
+    jit.overrideTasksDir = path.resolve('override');
+
+    existsSync.withArgs(path.resolve('custom/foo.js')).returns(false);
+    existsSync.withArgs(path.resolve('custom/foo.coffee')).returns(true);
+    existsSync.withArgs(path.resolve('override/foo.js')).returns(false);
+    existsSync.withArgs(path.resolve('override/foo.coffee')).returns(true);
+
+    jit.findPlugin('foo');
+
+    assert.deepEqual(
+      loadPlugin.getCall(0).args,
+      ['foo', path.resolve('override/foo.coffee'), true]);
   });
 
   it('findUp', () => {

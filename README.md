@@ -147,6 +147,28 @@ Search in the following order:
 Alias to `customTasksDir`.
 
 
+#### overrideTasksDir
+
+Type: `String`  
+Default: `null`
+
+JIT Loading to override custom tasks dir (replacement of [grunt.loadTasks]).
+It takes precedence over `customTasksDir`.
+
+```js
+require('jit-grunt')(grunt)({
+  customTasksDir: 'custom/dir',
+  overrideTasksDir: 'override/dir'
+});
+```
+
+Search in the following order:
+
+1. `override/dir`/`taskname`.js
+2. `override/dir`/`taskname`.coffee
+3. `custom/dir`/`taskname`.js
+4. `custom/dir`/`taskname`.coffee
+
 ## Example
 
 https://github.com/shootaroo/jit-grunt/tree/master/example
